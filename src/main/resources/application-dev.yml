@@ -2,17 +2,14 @@ spring:
   devtools:
     restart:
       enabled: true
-  ########## 配置数据源 （Druid）##########
+      additional-paths: src/main
   datasource:
-    ########## JDBC 基本配置 ##########
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver   # mysql8 的连接驱动
-    url: jdbc:mysql://127.0.0.1:3306/crp_vehiclemanage_v1.0?serverTimezone=Asia/Shanghai
-    platform: mysql                               # 数据库类型
-    type: com.alibaba.druid.pool.DruidDataSource  # 指定数据源类型
-    ########## 连接池 配置 ##########
     druid:
+      ########## JDBC 基本配置 ##########
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver   # mysql8 的连接驱动
+      url: jdbc:mysql://127.0.0.1:3306/crp_vehiclemanage_v1.0?serverTimezone=Asia/Shanghai
       ########### 启用内置过滤器（第一个 stat必须，否则监控不到SQL）##########
       filters: stat,wall,log4j2
       # 自己配置监控统计拦截的filter
@@ -48,6 +45,20 @@ spring:
         login-password: 123
         allow: 127.0.0.1           # 允许访问的地址，如果allow没有配置或者为空，则允许所有访问
         deny:                      # 拒绝访问的地址，deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝
+  dynamic:
+    enable: true
+    datasource:
+      slave1:
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver   # mysql8 的连接驱动
+        url: jdbc:mysql://127.0.0.1:3306/crp?serverTimezone=Asia/Shanghai
+      slave2:
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver   # mysql8 的连接驱动
+        url: jdbc:mysql://127.0.0.1:3306/crp?serverTimezone=Asia/Shanghai
+
 
 logging:
   level:

@@ -1,14 +1,19 @@
 package com.crp.common.exception;
 
 import com.crp.common.api.Result;
+import com.crp.common.api.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
+import java.util.stream.Collectors;
 
 /**
  * @Desc: 全局异常处理
@@ -20,31 +25,36 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class GlobalExceptionHandler {
 
     @ResponseBody
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public Result error(MethodArgumentNotValidException e) {
-        BindingResult bindingResult = e.getBindingResult();
-        String message = null;
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                message = fieldError.getField() + fieldError.getDefaultMessage();
-            }
+    @ExceptionHandler(value = {BindException.class, ValidationException.class, MethodArgumentNotValidException.class})
+    public Result argumentNotValidException(Exception e) {
+        Result resp = null;
+        if (e instanceof MethodArgumentNotValidException) {
+            // BeanValidation exception
+            MethodArgumentNotValidException ex = (MethodArgumentNotValidException) e;
+            resp = Result.failed(ResultCode.VALIDATE_FAILED,
+                    ex.getBindingResult().getAllErrors().stream()
+                            .map(ObjectError::getDefaultMessage)
+                            .collect(Collectors.joining("; "))
+            );
+        } else if (e instanceof ConstraintViolationException) {
+            // BeanValidation GET simple param
+            ConstraintViolationException ex = (ConstraintViolationException) e;
+            resp = Result.failed(ResultCode.VALIDATE_FAILED,
+                    ex.getConstraintViolations().stream()
+                            .map(ConstraintViolation::getMessage)
+                            .collect(Collectors.joining("; "))
+            );
+        } else if (e instanceof BindException) {
+            // BeanValidation GET object param
+            BindException ex = (BindException) e;
+            resp = Result.failed(ResultCode.VALIDATE_FAILED,
+                    ex.getAllErrors().stream()
+                            .map(ObjectError::getDefaultMessage)
+                            .collect(Collectors.joining("; "))
+            );
         }
-        return Result.validateFailed(message);
-    }
 
-    @ResponseBody
-    @ExceptionHandler(value = BindException.class)
-    public Result error(BindException e) {
-        BindingResult bindingResult = e.getBindingResult();
-        String message = null;
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            if (fieldError != null) {
-                message = fieldError.getField() + fieldError.getDefaultMessage();
-            }
-        }
-        return Result.validateFailed(message);
+        return resp;
     }
 
     @ResponseBody

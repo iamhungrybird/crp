@@ -7,9 +7,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author wxx
  * <p>
@@ -17,30 +14,25 @@ import java.util.List;
  */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
+
     /**
      * 跨域配置
      */
     @Bean
     public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        // 是否允许请求带有验证信息
-        config.setAllowCredentials(true);
-
-        // 允许访问的客户端域名
-        // (springboot2.4以上的加入这一段可解决 allowedOrigins cannot contain the special value "*"问题)
-        List<String> allowedOriginPatterns = new ArrayList<>();
-        allowedOriginPatterns.add("*");
-        config.setAllowedOriginPatterns(allowedOriginPatterns);
-
-        // 设置访问源地址
+        //允许所有域名进行跨域调用
         config.addAllowedOrigin("*");
-        // 设置访问源请求头
+        //允许跨越发送cookie
+        config.setAllowCredentials(true);
+        //放行全部原始头信息
         config.addAllowedHeader("*");
-        // 设置访问源请求方法
+        //允许所有请求方法跨域调用
         config.addAllowedMethod("*");
-        // 对接口配置跨域设置
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
+
 }
