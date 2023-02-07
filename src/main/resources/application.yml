@@ -1,0 +1,66 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: crp
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+    #  让 404 也抛出异常
+    throw-exception-if-no-handler-found: true
+  # 时间格式序列化
+  jackson:
+    default-property-inclusion: non_empty
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+    locale: zh_CN
+  druid:
+    # 用来测试连接是否可用的SQL语句,默认值每种数据库都不相同,这是mysql
+    validationQuery: select 1
+    # 应用向连接池申请连接，并且testOnBorrow为false时，连接池将会判断连接是否处于空闲状态，如果是，则验证这条连接是否可用
+    testWhileIdle: true
+    # 如果为true，默认是false，应用向连接池申请连接时，连接池会判断这条连接是否是可用的
+    testOnBorrow: false
+    # 如果为true（默认false），当应用使用完连接，连接池回收连接的时候会判断该连接是否还可用
+    testOnReturn: false
+    # 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle
+    poolPreparedStatements: true
+    # 要启用PSCache，必须配置大于0，当大于0时， poolPreparedStatements自动触发修改为true，
+    # 在Druid中，不会存在Oracle下PSCache占用内存过多的问题，
+    # 可以把这个数值配置大一些，比如说100
+    maxOpenPreparedStatements: 2
+    # 连接池中的minIdle数量以内的连接，空闲时间超过minEvictableIdleTimeMillis，则会执行keepAlive操作
+    keepAlive: true
+    # Spring 监控，利用aop 对指定接口的执行时间，jdbc数进行记录
+    aop-patterns: "com.springboot.template.dao.*"
+
+
+#mybatis
+mybatis:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.crp.vehicle.entity
+  global-config:
+    #数据库相关配置
+    db-config:
+      #主键类型  AUTO:"数据库ID自增", INPUT:"用户输入ID", ID_WORKER:"全局唯一ID (数字类型唯一ID)", UUID:"全局唯一ID UUID";
+      id-type: AUTO
+      logic-delete-value: -1
+      logic-not-delete-value: 0
+    banner: false
+  #原生配置
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: null

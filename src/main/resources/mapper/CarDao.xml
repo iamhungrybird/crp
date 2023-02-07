@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crp.vehicle.dao.CarDao">
+    <resultMap type="com.crp.vehicle.entity.Car" id="CarMap">
+        <result property="cid" column="cid" jdbcType="INTEGER"/>
+        <result property="num" column="num" jdbcType="VARCHAR"/>
+        <result property="brand" column="brand" jdbcType="VARCHAR"/>
+        <result property="model" column="model" jdbcType="VARCHAR"/>
+        <result property="color" column="color" jdbcType="VARCHAR"/>
+        <result property="cartype" column="cartype" jdbcType="VARCHAR"/>
+        <result property="insurancedeadline" column="insurancedeadline" jdbcType="TIMESTAMP"/>
+        <result property="mileage" column="mileage" jdbcType="INTEGER"/>
+        <result property="capacity" column="capacity" jdbcType="INTEGER"/>
+        <result property="carstate" column="carstate" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="CarMap">
+        select
+        cid, num, brand, model, color, cartype, insurancedeadline, mileage, capacity, carstate
+        from car
+        where cid = #{cid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="CarMap">
+        select
+        cid, num, brand, model, color, cartype, insurancedeadline, mileage, capacity, carstate
+        from car
+        <where>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="num != null and num != ''">
+                and num = #{num}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="model != null and model != ''">
+                and model = #{model}
+            </if>
+            <if test="color != null and color != ''">
+                and color = #{color}
+            </if>
+            <if test="cartype != null and cartype != ''">
+                and cartype = #{cartype}
+            </if>
+            <if test="insurancedeadline != null">
+                and insurancedeadline = #{insurancedeadline}
+            </if>
+            <if test="mileage != null">
+                and mileage = #{mileage}
+            </if>
+            <if test="capacity != null">
+                and capacity = #{capacity}
+            </if>
+            <if test="carstate != null and carstate != ''">
+                and carstate = #{carstate}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from car
+        <where>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="num != null and num != ''">
+                and num = #{num}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="model != null and model != ''">
+                and model = #{model}
+            </if>
+            <if test="color != null and color != ''">
+                and color = #{color}
+            </if>
+            <if test="cartype != null and cartype != ''">
+                and cartype = #{cartype}
+            </if>
+            <if test="insurancedeadline != null">
+                and insurancedeadline = #{insurancedeadline}
+            </if>
+            <if test="mileage != null">
+                and mileage = #{mileage}
+            </if>
+            <if test="capacity != null">
+                and capacity = #{capacity}
+            </if>
+            <if test="carstate != null and carstate != ''">
+                and carstate = #{carstate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="cid" useGeneratedKeys="true">
+        insert into car(num, brand, model, color, cartype, insurancedeadline, mileage, capacity, carstate)
+        values (#{num}, #{brand}, #{model}, #{color}, #{cartype}, #{insurancedeadline}, #{mileage}, #{capacity},
+        #{carstate})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="cid" useGeneratedKeys="true">
+        insert into car(num, brand, model, color, cartype, insurancedeadline, mileage, capacity, carstate)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.num}, #{entity.brand}, #{entity.model}, #{entity.color}, #{entity.cartype},
+            #{entity.insurancedeadline}, #{entity.mileage}, #{entity.capacity}, #{entity.carstate})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="cid" useGeneratedKeys="true">
+        insert into car(num, brand, model, color, cartype, insurancedeadline, mileage, capacity, carstate)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.num}, #{entity.brand}, #{entity.model}, #{entity.color}, #{entity.cartype},
+            #{entity.insurancedeadline}, #{entity.mileage}, #{entity.capacity}, #{entity.carstate})
+        </foreach>
+        on duplicate key update
+        num = values(num),
+        brand = values(brand),
+        model = values(model),
+        color = values(color),
+        cartype = values(cartype),
+        insurancedeadline = values(insurancedeadline),
+        mileage = values(mileage),
+        capacity = values(capacity),
+        carstate = values(carstate)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update car
+        <set>
+            <if test="num != null and num != ''">
+                num = #{num},
+            </if>
+            <if test="brand != null and brand != ''">
+                brand = #{brand},
+            </if>
+            <if test="model != null and model != ''">
+                model = #{model},
+            </if>
+            <if test="color != null and color != ''">
+                color = #{color},
+            </if>
+            <if test="cartype != null and cartype != ''">
+                cartype = #{cartype},
+            </if>
+            <if test="insurancedeadline != null">
+                insurancedeadline = #{insurancedeadline},
+            </if>
+            <if test="mileage != null">
+                mileage = #{mileage},
+            </if>
+            <if test="capacity != null">
+                capacity = #{capacity},
+            </if>
+            <if test="carstate != null and carstate != ''">
+                carstate = #{carstate},
+            </if>
+        </set>
+        where cid = #{cid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from car where cid = #{cid}
+    </delete>
+</mapper>
+

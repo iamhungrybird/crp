@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crp.vehicle.dao.RecordDao">
+    <resultMap type="com.crp.vehicle.entity.Record" id="RecordMap">
+        <result property="rid" column="rid" jdbcType="INTEGER"/>
+        <result property="aid" column="aid" jdbcType="INTEGER"/>
+        <result property="cid" column="cid" jdbcType="INTEGER"/>
+        <result property="adminuserid" column="adminuserid" jdbcType="VARCHAR"/>
+        <result property="assignedtime" column="assignedtime" jdbcType="TIMESTAMP"/>
+        <result property="driveruserid" column="driveruserid" jdbcType="VARCHAR"/>
+        <result property="taketime" column="taketime" jdbcType="TIMESTAMP"/>
+        <result property="backtime" column="backtime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RecordMap">
+        select
+        rid, aid, cid, adminuserid, assignedtime, driveruserid, taketime, backtime
+        from record
+        where rid = #{rid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RecordMap">
+        select
+        rid, aid, cid, adminuserid, assignedtime, driveruserid, taketime, backtime
+        from record
+        <where>
+            <if test="rid != null">
+                and rid = #{rid}
+            </if>
+            <if test="aid != null">
+                and aid = #{aid}
+            </if>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="adminuserid != null and adminuserid != ''">
+                and adminuserid = #{adminuserid}
+            </if>
+            <if test="assignedtime != null">
+                and assignedtime = #{assignedtime}
+            </if>
+            <if test="driveruserid != null and driveruserid != ''">
+                and driveruserid = #{driveruserid}
+            </if>
+            <if test="taketime != null">
+                and taketime = #{taketime}
+            </if>
+            <if test="backtime != null">
+                and backtime = #{backtime}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from record
+        <where>
+            <if test="rid != null">
+                and rid = #{rid}
+            </if>
+            <if test="aid != null">
+                and aid = #{aid}
+            </if>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="adminuserid != null and adminuserid != ''">
+                and adminuserid = #{adminuserid}
+            </if>
+            <if test="assignedtime != null">
+                and assignedtime = #{assignedtime}
+            </if>
+            <if test="driveruserid != null and driveruserid != ''">
+                and driveruserid = #{driveruserid}
+            </if>
+            <if test="taketime != null">
+                and taketime = #{taketime}
+            </if>
+            <if test="backtime != null">
+                and backtime = #{backtime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="rid" useGeneratedKeys="true">
+        insert into record(aid, cid, adminuserid, assignedtime, driveruserid, taketime, backtime)
+        values (#{aid}, #{cid}, #{adminuserid}, #{assignedtime}, #{driveruserid}, #{taketime}, #{backtime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="rid" useGeneratedKeys="true">
+        insert into record(aid, cid, adminuserid, assignedtime, driveruserid, taketime, backtime)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.aid}, #{entity.cid}, #{entity.adminuserid}, #{entity.assignedtime}, #{entity.driveruserid},
+            #{entity.taketime}, #{entity.backtime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="rid" useGeneratedKeys="true">
+        insert into record(aid, cid, adminuserid, assignedtime, driveruserid, taketime, backtime)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.aid}, #{entity.cid}, #{entity.adminuserid}, #{entity.assignedtime}, #{entity.driveruserid},
+            #{entity.taketime}, #{entity.backtime})
+        </foreach>
+        on duplicate key update
+        aid = values(aid),
+        cid = values(cid),
+        adminuserid = values(adminuserid),
+        assignedtime = values(assignedtime),
+        driveruserid = values(driveruserid),
+        taketime = values(taketime),
+        backtime = values(backtime)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update record
+        <set>
+            <if test="aid != null">
+                aid = #{aid},
+            </if>
+            <if test="cid != null">
+                cid = #{cid},
+            </if>
+            <if test="adminuserid != null and adminuserid != ''">
+                adminuserid = #{adminuserid},
+            </if>
+            <if test="assignedtime != null">
+                assignedtime = #{assignedtime},
+            </if>
+            <if test="driveruserid != null and driveruserid != ''">
+                driveruserid = #{driveruserid},
+            </if>
+            <if test="taketime != null">
+                taketime = #{taketime},
+            </if>
+            <if test="backtime != null">
+                backtime = #{backtime},
+            </if>
+        </set>
+        where rid = #{rid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from record where rid = #{rid}
+    </delete>
+</mapper>
+
